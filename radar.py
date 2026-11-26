@@ -235,7 +235,7 @@ def index(spec):
         try:
             _, title, stamp, excerpt = page_info(link)
             result = item(title, link, stamp, spec["name"],
-                          "research" if spec["name"] in {"Stanford Digital Economy Lab", "Anthropic Economic Index"} else "official", excerpt)
+                          "research" if spec["name"] in {"Stanford Digital Economy Lab", "Anthropic Economics Research"} else "official", excerpt)
             if result:
                 result.verification = "opened"
             return result, None if result else {"url": link, "status": "undated_or_missing_title"}
@@ -613,8 +613,8 @@ def rank(entries, reviews, settings, fresh, oldest):
             row["event_signal_ids"] = [signal["id"] for signal in group if signal["metrics"]]
 
     for row in rows:
-        if date(row["published"]) < oldest:
-            decision, reason = "skip", "核验后原始发布日期在回看窗口之外"
+        if not oldest <= date(row["published"]) <= NOW + timedelta(minutes=5):
+            decision, reason = "skip", "核验后原始发布日期在查询窗口之外"
         elif not row["relevant"] or row["impact"] < settings["min_impact"]:
             decision, reason = "skip", "未达到主题或影响门槛"
         elif row["evidence"] < settings["min_evidence"]:
@@ -640,7 +640,7 @@ def rank(entries, reviews, settings, fresh, oldest):
             seen.add(key)
             selected.append(row)
     watch = []
-    for row in rows:
+    for row in sorted(rows, key=lambda row: (-row["evidence"], *order(row))):
         key = row["event_key"].casefold().strip()
         if row["decision"] == "watch" and row["window"] == "recent" and key not in seen:
             watch.append(row)

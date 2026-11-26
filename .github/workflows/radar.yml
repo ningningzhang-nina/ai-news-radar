@@ -52,7 +52,8 @@ jobs:
           from pathlib import Path
           run = json.loads(Path("out/run.json").read_text())
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
-              summary.write("# 美国 AI 一手快报\n\n")
+              summary.write(Path("out/brief.md").read_text(encoding="utf-8"))
+              summary.write("\n")
               summary.write(f"候选 {run['candidate_count']} 条，入选 {run['selected_count']} 条。")
               summary.write("请在 Artifacts 下载快报、评分表和来源记录。\n")
           PY
