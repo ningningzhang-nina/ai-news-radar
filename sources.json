@@ -1,0 +1,170 @@
+{
+  "feeds": [
+    {
+      "name": "OpenAI News",
+      "url": "https://openai.com/news/rss.xml",
+      "role": "official"
+    },
+    {
+      "name": "Google DeepMind",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "role": "official"
+    },
+    {
+      "name": "arXiv cs.AI / cs.LG / cs.CL",
+      "url": "https://rss.arxiv.org/rss/cs.AI+cs.LG+cs.CL",
+      "role": "research"
+    },
+    {
+      "name": "Simon Willison",
+      "url": "https://simonwillison.net/atom/everything/",
+      "role": "independent"
+    },
+    {
+      "name": "OpenAI YouTube",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCXZCJLdBC09xxGZ6gcdrc6A",
+      "role": "video"
+    },
+    {
+      "name": "Anthropic YouTube",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCrDwWp7EBBv4NwvScIpBDOA",
+      "role": "video"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "Anthropic News",
+      "url": "https://www.anthropic.com/news",
+      "prefix": "/news/"
+    },
+    {
+      "name": "Anthropic Engineering",
+      "url": "https://www.anthropic.com/engineering",
+      "prefix": "/research/"
+    },
+    {
+      "name": "Anthropic Economic Index",
+      "url": "https://www.anthropic.com/economic-index",
+      "prefix": "/research/"
+    },
+    {
+      "name": "Stanford Digital Economy Lab",
+      "url": "https://digitaleconomy.stanford.edu/research/all-work/",
+      "prefix": "/publication/"
+    }
+  ],
+  "github_releases": [
+    "openai/codex",
+    "anthropics/claude-code"
+  ],
+  "hacker_news": {
+    "url": "https://hn.algolia.com/api/v1/search",
+    "queries": [
+      "AI agent",
+      "OpenAI",
+      "Anthropic",
+      "DeepMind",
+      "AI jobs",
+      "AI benchmark"
+    ]
+  },
+  "inbrief": "https://inbrief.info/api/feed",
+  "x_accounts": [
+    "OpenAI",
+    "OpenAIDevs",
+    "AnthropicAI",
+    "claudeai",
+    "GoogleDeepMind",
+    "karpathy",
+    "simonw"
+  ],
+  "evidence_domains": [
+    "openai.com",
+    "anthropic.com",
+    "claude.com",
+    "deepmind.google",
+    "ai.meta.com",
+    "arxiv.org",
+    "openreview.net",
+    "huggingface.co",
+    "github.com",
+    "simonwillison.net",
+    "metr.org",
+    "digitaleconomy.stanford.edu",
+    "nber.org",
+    "census.gov",
+    "reuters.com",
+    "youtube.com",
+    "x.com"
+  ],
+  "organization": [
+    "OpenAI",
+    "Anthropic",
+    "Claude",
+    "Google",
+    "DeepMind",
+    "Gemini",
+    "Meta",
+    "Microsoft",
+    "Stanford",
+    "US",
+    "U.S.",
+    "United States"
+  ],
+  "topic_patterns": {
+    "新功能": "\\b(agent(?:ic|s)?|skills?|codex|claude code|mcp|loop|workflow|computer use|tool use|feature|api|release|model|launch|memory)\\b",
+    "新概念": "\\b(chain.of.thought|reasoning|benchmark|evaluation|training|architecture|framework|method|reproducib\\w*|paradigm)\\b",
+    "工作影响": "\\b(employment|labor|labour|jobs?|wages?|payroll|occupations?|worker|workforce|productivity|hiring|layoffs?|economic index)\\b",
+    "行业大事": "\\b(initial public offering|IPO|merger|acquisition|antitrust|regulation|export controls|major funding)\\b"
+  },
+  "impact_patterns": {
+    "substantive": "\\b(generally available|open weights|introduc\\w*|launch\\w*|releas\\w*|new feature|now available|new model|employment data|payroll data|new benchmark|new study|initial public offering|antitrust ruling|signs into law|now supports|added support|ships|unveils)\\b",
+    "minor": "\\b(fix(?:es|ed)?|bugfix|typo|patch|dependency bump|docs only)\\b"
+  },
+  "heat_thresholds_72h": {
+    "hn_points": [
+      10,
+      30,
+      75,
+      180,
+      400
+    ],
+    "hn_comments": [
+      5,
+      15,
+      40,
+      100,
+      250
+    ],
+    "youtube_views": [
+      1000,
+      5000,
+      20000,
+      100000,
+      300000
+    ],
+    "x_impressions": [
+      2000,
+      10000,
+      40000,
+      150000,
+      500000
+    ],
+    "x_likes": [
+      20,
+      75,
+      250,
+      1000,
+      3000
+    ]
+  },
+  "report": {
+    "fresh_hours": 72,
+    "lookback_hours": 168,
+    "limit": 5,
+    "min_evidence": 2,
+    "min_impact": 3,
+    "older_min_heat": 3,
+    "model_limit": 32
+  }
+}

@@ -1,0 +1,66 @@
+name: 美国 AI 一手快报
+
+on:
+  workflow_dispatch:
+    inputs:
+      fresh_hours:
+        description: 首发窗口（小时）
+        default: "72"
+        type: string
+      lookback_hours:
+        description: 回看窗口（小时）
+        default: "168"
+        type: string
+  push:
+    branches: [main]
+    paths: [radar.py, sources.json, editorial.md, .github/workflows/radar.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate scoring and export
+        run: python3 radar.py --self-test
+  collect:
+    if: github.event_name == 'workflow_dispatch'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect and score
+        env:
+          FRESH_HOURS: ${{ inputs.fresh_hours }}
+          LOOKBACK_HOURS: ${{ inputs.lookback_hours }}
+          GH_TOKEN: ${{ github.token }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python3 radar.py --fresh-hours "$FRESH_HOURS" --lookback-hours "$LOOKBACK_HOURS"
+      - name: Publish summary
+        if: always()
+        run: |
+          if [ -f out/run.json ]; then
+            python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          run = json.loads(Path("out/run.json").read_text())
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("# 美国 AI 一手快报\n\n")
+              summary.write(f"候选 {run['candidate_count']} 条，入选 {run['selected_count']} 条。")
+              summary.write("请在 Artifacts 下载快报、评分表和来源记录。\n")
+          PY
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ai-news-radar-${{ github.run_id }}-${{ github.run_attempt }}
+          path: out/
+          if-no-files-found: error
+          retention-days: 30
