@@ -249,7 +249,20 @@ def index(spec):
 
 def github_releases(repo):
     url = f"https://api.github.com/repos/{repo}/releases"
-    data = fetch_json(url, params={"per_page": 12}, token=os.getenv("GH_TOKEN"))
+    try:
+        data = fetch_json(url, params={"per_page": 12}, token=os.getenv("GH_TOKEN"))
+    except Exception as exc:
+        fallback = f"https://github.com/{repo}/releases.atom"
+        entries = feed({"name": repo, "url": fallback, "role": "release"})
+        releases = []
+        for entry in entries:
+            if not entry or re.search(r"[-.](alpha|beta|rc|nightly|dev)", entry.title, re.I):
+                continue
+            entry.title = f"{repo} {entry.title}"
+            entry.verification = "release_atom_updated"
+            releases.append(entry)
+        return releases, [{"url": url, "status": error_label(exc), "fallback": fallback,
+                           "date_type": "official feed updated time"}]
     results = []
     for row in data:
         if row.get("draft") or row.get("prerelease"):
@@ -455,21 +468,27 @@ def heuristic(entry):
         reason += "。含发布、开放或新证据关键词"
     if minor:
         reason += "。标题呈现小改动"
+    excerpt = ""
+    if direct and entry.role == "release":
+        match = re.search(CONFIG["impact_patterns"]["substantive"], entry.excerpt[:470], re.I)
+        if match:
+            excerpt = entry.excerpt[match.start():match.start() + 115].strip()
+    caveat = ("直接证据仅支持发布方已公布此消息，宣传效果与实际影响待独立核验。"
+              if direct else "规则初筛，影响和关键说法待编辑核验。")
+    if entry.verification == "release_atom_updated":
+        caveat += "日期为官方订阅的更新时间。"
     return {
         "id": entry.id, "event_key": entry.id, "title": entry.title,
         "relevant": relevant, "topic": topics[0] if topics else "其他",
-        "evidence": evidence, "impact": impact, "summary": "",
-        "reason": reason, "caveat": (
-            "直接证据仅支持发布方已公布此消息，宣传效果与实际影响待独立核验。"
-            if direct else "规则初筛，影响和关键说法待编辑核验。"
-        ),
+        "evidence": evidence, "impact": impact, "summary": excerpt,
+        "reason": reason, "caveat": caveat,
         "evidence_ids": [entry.id] if evidence else [],
         "mode": "rules",
     }
 
 
 def verify(entry):
-    if entry.verification in {"opened", "release_api", "post_api"}:
+    if entry.verification in {"opened", "release_api", "release_atom_updated", "post_api"}:
         return
     if domain(entry.url) == "youtube.com" and entry.role == "video":
         entry.verification = "official_channel_feed"
@@ -511,7 +530,7 @@ def schema():
             "required": ["reviews"], "additionalProperties": False}
 
 
-DIRECT_CHECKS = {"opened", "release_api", "official_channel_feed", "post_api"}
+DIRECT_CHECKS = {"opened", "release_api", "release_atom_updated", "official_channel_feed", "post_api"}
 
 
 def model_review(entries):

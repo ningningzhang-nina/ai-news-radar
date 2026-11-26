@@ -118,7 +118,7 @@
     "行业大事": "\\b(initial public offering|IPO|merger|acquisition|antitrust|regulation|export controls|major funding)\\b"
   },
   "impact_patterns": {
-    "substantive": "\\b(generally available|open weights|introduc\\w*|launch\\w*|releas\\w*|new feature|now available|new model|employment data|payroll data|new benchmark|new study|initial public offering|antitrust ruling|signs into law|now supports|added support|ships|unveils)\\b",
+    "substantive": "\\b(generally available|open weights|introduc\\w*|launch\\w*|releas\\w*|new feature|now available|new model|employment data|payroll data|new benchmark|new study|initial public offering|antitrust ruling|signs into law|now supports|added (?:support|skills?|agent mode|mcp|workflow|loop)|ships|unveils)\\b",
     "minor": "\\b(fix(?:es|ed)?|bugfix|typo|patch|dependency bump|docs only)\\b"
   },
   "heat_thresholds_72h": {
